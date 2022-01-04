@@ -124,16 +124,11 @@ class Hero:
 
         self.width = width
         self.height = height
+        self.color = (0, 255, 0)
 
     def draw(self, surface_to_draw):
         collide_with_wall = collide_with(self.get_hit_box(self.position), level1_map, wall_codes)
-
-        if collide_with_wall:
-            color = RED_COLOR
-        else:
-            color = GREEN_COLOR
-
-        pygame.draw.rect(surface_to_draw, color, self.get_bbox(), 2)
+        pygame.draw.rect(surface_to_draw, self.color, self.get_bbox(), 2)
 
     def get_bbox(self, position=None):  # -> pygame.Rect
         if position is None:
@@ -146,6 +141,8 @@ class Hero:
             return pygame.Rect(self.position.x + 2, self.position.y + 2, self.width - 4, self.height - 4)
         else:
             return pygame.Rect(position.x + 2, position.y + 2, self.width - 4, self.height - 4)
+
+
 
     def update(self, events=None):
         global old_pos_x, old_pos_y
@@ -255,6 +252,10 @@ while is_running:
         elif i != my_addr:
             other_plays_classes[i].update()
             other_plays_classes[i].draw(screen)
+        else:
+            if other_plays[i][1]:
+                hero.color = (255, 0, 0)
+
     draw_text(1, 1, str(hero))
 
     pygame.display.flip()
