@@ -44,8 +44,8 @@ while 1:
     print(f"connect: {client_address}")
     if len(users) == 0:
         print(1)
-        users[client_address] = (0, 0)
+        users[client_address] = ((0, 0), True)
         threading.Thread(target=listen, args=(connection, client_address, True)).start()
     else:
-        users[client_address] = (0, 0)
+        users[client_address] = ((0, 0), False)
         threading.Thread(target=listen, args=(connection, client_address, False)).start()
