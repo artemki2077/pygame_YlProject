@@ -115,10 +115,6 @@ class OtherHero:
 
     def update(self):
         self.position = pygame.Vector2(*other_plays[self.id][0])
-        if other_plays[self.id][1]:
-            self.color = RED_COLOR
-        else:
-            self.color = BLUE_COLOR
 
 
 class Hero:
@@ -252,7 +248,10 @@ while is_running:
     hero.draw(screen)
     for i in other_plays:
         if i not in other_plays_classes and i != my_addr:
-            other_plays_classes[i] = OtherHero(*other_plays[i][0], (255, 0, 0), i)
+            if other_plays[i][1]:
+                other_plays_classes[i] = OtherHero(*other_plays[i][0], (255, 0, 0), i)
+            else:
+                other_plays_classes[i] = OtherHero(*other_plays[i][0], (0, 0, 255), i)
         elif i != my_addr:
             other_plays_classes[i].update()
             other_plays_classes[i].draw(screen)
