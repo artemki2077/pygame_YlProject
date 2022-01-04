@@ -30,7 +30,7 @@ SCREEN_SIZE = WIDTH, HEIGHT = 850, 550
 start = (87, 145)
 other_plays = {}
 other_plays_classes = {}
-server = ('192.168.47.61', 9999)
+server = ('192.168.47.192', 9999)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect(server)
 threading.Thread(target=listen).start()
@@ -114,7 +114,11 @@ class OtherHero:
         pygame.draw.rect(_screen, self.color, self.get_bbox(), 2)
 
     def update(self):
-        self.position = pygame.Vector2(*other_plays[self.id])
+        self.position = pygame.Vector2(*other_plays[self.id][0])
+        if other_plays[self.id][1]:
+            self.color = RED_COLOR
+        else:
+            self.color = BLUE_COLOR
 
 
 class Hero:
