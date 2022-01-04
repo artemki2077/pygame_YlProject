@@ -23,7 +23,6 @@ def listen(conn, addr, first):
                 if date != "":
                     x, y = list(map(float, date.split(", ")))[:2]
                     users[addr] = ((x, y), False)
-
                     conn.sendall(str(users).encode("utf-8"))
                     # for i in users:
                     #     conn.sendto(ppp, i)
