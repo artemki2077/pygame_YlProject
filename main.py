@@ -12,6 +12,7 @@ def listen():
         while 1:
             data = sock.recv(4096).decode("utf-8")
             other_plays = eval(data)
+
     except SyntaxError:
         listen()
 
