@@ -252,7 +252,7 @@ while is_running:
     hero.draw(screen)
     for i in other_plays:
         if i not in other_plays_classes and i != my_addr:
-            other_plays_classes[i] = OtherHero(*other_plays[i], (255, 0, 0), i)
+            other_plays_classes[i] = OtherHero(*other_plays[i][0], (255, 0, 0), i)
         elif i != my_addr:
             other_plays_classes[i].update()
             other_plays_classes[i].draw(screen)
