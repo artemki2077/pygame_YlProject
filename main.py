@@ -30,7 +30,7 @@ SCREEN_SIZE = WIDTH, HEIGHT = 850, 550
 start = (87, 145)
 other_plays = {}
 other_plays_classes = {}
-server = ('192.168.47.65', 9999)
+server = ('192.168.1.65', 10001)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect(server)
 threading.Thread(target=listen).start()
@@ -115,6 +115,10 @@ class OtherHero:
 
     def update(self):
         self.position = pygame.Vector2(*other_plays[self.id][0])
+        if other_plays[self.id][1]:
+            self.color = RED_COLOR
+        else:
+            self.color = BLUE_COLOR
 
 
 class Hero:
@@ -141,8 +145,6 @@ class Hero:
             return pygame.Rect(self.position.x + 2, self.position.y + 2, self.width - 4, self.height - 4)
         else:
             return pygame.Rect(position.x + 2, position.y + 2, self.width - 4, self.height - 4)
-
-
 
     def update(self, events=None):
         global old_pos_x, old_pos_y
@@ -201,6 +203,10 @@ class Hero:
             self.velocity.y = 0
         else:
             self.position += pos_delta
+        if my_addr in other_plays and other_plays[my_addr][1]:
+            self.color = RED_COLOR
+        else:
+            self.color = GREEN_COLOR
         if int(self.position.x) != old_pos_x or int(self.position.y) != old_pos_x:
             sock.sendall(str(self.position)[1:-1].encode("utf-8"))
             old_pos_x = int(self.position.x)
