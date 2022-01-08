@@ -30,12 +30,7 @@ SCREEN_SIZE = WIDTH, HEIGHT = 850, 550
 start = (87, 145)
 other_plays = {}
 other_plays_classes = {}
-server = ('192.168.1.65', 10001)
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect(server)
-threading.Thread(target=listen).start()
-my_addr = sock.getsockname()
-print(f"your addr: {my_addr}")
+server = ('192.168.47.61', 10001)
 
 
 def draw_text(x, y, text, size=20, color=WHITE_COLOR):
@@ -46,29 +41,6 @@ def draw_text(x, y, text, size=20, color=WHITE_COLOR):
     text_rect.topleft = (x, y)
     screen.blit(text_surface, text_rect)
 
-
-pygame.init()
-pygame.display.set_caption("Test")
-screen = pygame.display.set_mode(SCREEN_SIZE)
-# screen = pygame.display.set_mode(SCREEN_SIZE, flags=pygame.FULLSCREEN)
-
-clock = pygame.time.Clock()
-
-level1_map = []
-with open("assets/4.csv") as f:
-    reader = csv.reader(f, delimiter=',', quotechar='"')
-    for row in reader:
-        ints_row = [int(i) for i in row]
-        level1_map.append(ints_row)
-
-spritesheet = Spritesheet(
-    "assets/tileset3b.png",
-    tile_width=24, tile_height=24,
-    colorkey=pygame.Color(255, 0, 255)
-)
-
-start_x = (screen.get_width() - len(level1_map[0]) * 24) // 2
-start_y = (screen.get_height() - len(level1_map) * 24) // 2
 
 wall_codes = [1, 72, 166, 171, 172, 201, 202, 203, 220, 223, 226, 307, 340, 342, 344]
 ladder_codes = [132, 133]
@@ -216,55 +188,91 @@ class Hero:
         return f"pos: {self.position}, vel: {self.velocity}"
 
 
-map_height_px = len(level1_map) * 24
-# hero = Hero(screen.get_width() // 2, start_y + map_height_px - 24 * 2 , 24, 24)
-hero = Hero(screen.get_width() // 2, start_y + 24 * 3, 24, 24)
 # hero2 = OtherHero(screen.get_width() // 3, start_y + 24 * 7, (255, 0, 0), 0)
 
-is_running = True
-while is_running:
-    events = pygame.event.get()
-    for event in events:
-        if event.type == pygame.QUIT:
-            is_running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+def main(name, skin):
+    global sock, my_addr, screen, level1_map, spritesheet, start_x, start_y
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.connect(server)
+    threading.Thread(target=listen).start()
+    my_addr = sock.getsockname()
+    print(f"your addr: {my_addr}")
+
+    pygame.init()
+    pygame.display.set_caption("Test")
+    screen = pygame.display.set_mode(SCREEN_SIZE)
+
+    spritesheet = Spritesheet(
+        "assets/tileset3b.png",
+        tile_width=24, tile_height=24,
+        colorkey=pygame.Color(255, 0, 255)
+    )
+    level1_map = []
+    with open("assets/4.csv") as f:
+        reader = csv.reader(f, delimiter=',', quotechar='"')
+        for row in reader:
+            ints_row = [int(i) for i in row]
+            level1_map.append(ints_row)
+
+    start_x = (screen.get_width() - len(level1_map[0]) * 24) // 2
+    start_y = (screen.get_height() - len(level1_map) * 24) // 2
+
+    map_height_px = len(level1_map) * 24
+    # hero = Hero(screen.get_width() // 2, start_y + map_height_px - 24 * 2 , 24, 24)
+    hero = Hero(screen.get_width() // 2, start_y + 24 * 3, 24, 24)
+    # screen = pygame.display.set_mode(SCREEN_SIZE, flags=pygame.FULLSCREEN)
+
+    clock = pygame.time.Clock()
+
+    is_running = True
+    while is_running:
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
                 is_running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    is_running = False
 
-    screen.fill(BLACK_COLOR)
+        screen.fill(BLACK_COLOR)
 
-    for c, row in enumerate(level1_map):
-        for r, item_code in enumerate(row):
-            if item_code != -1:
-                rect = pygame.Rect(
-                    start_x + r * spritesheet.tile_width,
-                    start_y + c * spritesheet.tile_height,
-                    spritesheet.tile_width,
-                    spritesheet.tile_height)
+        for c, row in enumerate(level1_map):
+            for r, item_code in enumerate(row):
+                if item_code != -1:
+                    rect = pygame.Rect(
+                        start_x + r * spritesheet.tile_width,
+                        start_y + c * spritesheet.tile_height,
+                        spritesheet.tile_width,
+                        spritesheet.tile_height)
 
-                tile_col = item_code % 20
-                tile_row = item_code // 20
-                tile_img = spritesheet.image_at(tile_col=tile_col, tile_row=tile_row)
-                screen.blit(tile_img, rect.topleft)
+                    tile_col = item_code % 20
+                    tile_row = item_code // 20
+                    tile_img = spritesheet.image_at(tile_col=tile_col, tile_row=tile_row)
+                    screen.blit(tile_img, rect.topleft)
 
-    hero.update(events)
-    hero.draw(screen)
-    for i in other_plays:
-        if i not in other_plays_classes and i != my_addr:
-            if other_plays[i][1]:
-                other_plays_classes[i] = OtherHero(*other_plays[i][0], (255, 0, 0), i)
+        hero.update(events)
+        hero.draw(screen)
+        for i in other_plays:
+            if i not in other_plays_classes and i != my_addr:
+                if other_plays[i][1]:
+                    other_plays_classes[i] = OtherHero(*other_plays[i][0], (255, 0, 0), i)
+                else:
+                    other_plays_classes[i] = OtherHero(*other_plays[i][0], (0, 0, 255), i)
+            elif i != my_addr:
+                other_plays_classes[i].update()
+                other_plays_classes[i].draw(screen)
             else:
-                other_plays_classes[i] = OtherHero(*other_plays[i][0], (0, 0, 255), i)
-        elif i != my_addr:
-            other_plays_classes[i].update()
-            other_plays_classes[i].draw(screen)
-        else:
-            if other_plays[i][1]:
-                hero.color = (255, 0, 0)
+                if other_plays[i][1]:
+                    hero.color = (255, 0, 0)
 
-    draw_text(1, 1, str(hero))
+        draw_text(1, 1, str(hero))
 
-    pygame.display.flip()
-    clock.tick(60)
+        pygame.display.flip()
+        clock.tick(60)
 
-pygame.quit()
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main("test", "")
