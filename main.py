@@ -1,6 +1,8 @@
 import csv
 import socket
 import threading
+import time
+
 import pygame as pygame
 
 from spritesheet import Spritesheet
@@ -30,7 +32,7 @@ SCREEN_SIZE = WIDTH, HEIGHT = 850, 550
 start = (87, 145)
 other_plays = {}
 other_plays_classes = {}
-server = ('192.168.47.61', 10001)
+server = ('192.168.1.65', 10001)
 
 
 def draw_text(x, y, text, size=20, color=WHITE_COLOR):
@@ -84,27 +86,36 @@ class OtherHero:
 
     def draw(self, _screen):
         pygame.draw.rect(_screen, self.color, self.get_bbox(), 2)
+        draw_text(self.position.x, self.position.y - 20, other_plays[self.id][2])
 
     def update(self):
-        self.position = pygame.Vector2(*other_plays[self.id][0])
-        if other_plays[self.id][1]:
-            self.color = RED_COLOR
+        if other_plays[self.id] is None:
+            del other_plays[self.id]
+            del other_plays_classes[self.id]
         else:
-            self.color = BLUE_COLOR
+            self.position = pygame.Vector2(*other_plays[self.id][0])
+            if other_plays[self.id][1]:
+                self.color = RED_COLOR
+            else:
+                self.color = BLUE_COLOR
 
 
 class Hero:
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, name, skin):
         self.position = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
 
+        self.skin = skin
         self.width = width
         self.height = height
         self.color = (0, 255, 0)
 
+        self.name = name
+
     def draw(self, surface_to_draw):
         collide_with_wall = collide_with(self.get_hit_box(self.position), level1_map, wall_codes)
         pygame.draw.rect(surface_to_draw, self.color, self.get_bbox(), 2)
+        draw_text(self.position.x, self.position.y - 20, self.name)
 
     def get_bbox(self, position=None):  # -> pygame.Rect
         if position is None:
@@ -188,20 +199,22 @@ class Hero:
         return f"pos: {self.position}, vel: {self.velocity}"
 
 
-# hero2 = OtherHero(screen.get_width() // 3, start_y + 24 * 7, (255, 0, 0), 0)
-
-def main(name, skin):
+def main(name, skin, _screen=None):
     global sock, my_addr, screen, level1_map, spritesheet, start_x, start_y
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect(server)
+    time.sleep(1)
+    sock.sendall(f"{name}, {skin}".encode("utf-8"))
     threading.Thread(target=listen).start()
     my_addr = sock.getsockname()
     print(f"your addr: {my_addr}")
-
-    pygame.init()
-    pygame.display.set_caption("Test")
-    screen = pygame.display.set_mode(SCREEN_SIZE)
+    if _screen is None:
+        pygame.init()
+        pygame.display.set_caption("Test")
+        screen = pygame.display.set_mode(SCREEN_SIZE)
+    else:
+        screen = _screen
 
     spritesheet = Spritesheet(
         "assets/tileset3b.png",
@@ -220,7 +233,7 @@ def main(name, skin):
 
     map_height_px = len(level1_map) * 24
     # hero = Hero(screen.get_width() // 2, start_y + map_height_px - 24 * 2 , 24, 24)
-    hero = Hero(screen.get_width() // 2, start_y + 24 * 3, 24, 24)
+    hero = Hero(screen.get_width() // 2, start_y + 24 * 3, 24, 24, name, skin)
     # screen = pygame.display.set_mode(SCREEN_SIZE, flags=pygame.FULLSCREEN)
 
     clock = pygame.time.Clock()
@@ -275,4 +288,4 @@ def main(name, skin):
 
 
 if __name__ == "__main__":
-    main("test", "")
+    main("artem", "lol")

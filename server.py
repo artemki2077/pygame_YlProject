@@ -4,7 +4,6 @@ import time
 
 
 def listen(conn, addr):
-    global catcher
     try:
         while 1:
             date = conn.recv(1024).decode("utf-8")
@@ -12,12 +11,17 @@ def listen(conn, addr):
                 x, y = list(map(float, date.split(", ")))[:2]
                 users[addr][0] = (x, y)
                 conn.sendall(str(users).encode("utf-8"))
-                # for i in users:
-                #     conn.sendto(ppp, i)
                 # print(users)
-
     except:
         listen(conn, addr)
+
+
+def log_in(conn, addr):
+    date = conn.recv(1024).decode("utf-8")
+    name, skin = date.split(", ")
+    users[addr][2] = name
+    users[addr][3] = skin
+    listen(conn, addr)
 
 
 def is_cross(a, b):
@@ -48,7 +52,7 @@ def check_game():
         # print(users)
         if catcher is not None:
             for i in users.copy():
-                if i != catcher:
+                if i != catcher and i is not None:
                     if is_cross(users[catcher][0], users[i][0]):
                         users[catcher][1] = False
                         users[i][1] = True
@@ -70,9 +74,9 @@ while 1:
     print(f"connect: {client_address}")
     if len(users) == 0:
         # print(1)
-        users[client_address] = [(0, 0), True]
-        threading.Thread(target=listen, args=(connection, client_address)).start()
+        users[client_address] = [(0, 0), True, None, None]
+        threading.Thread(target=log_in, args=(connection, client_address)).start()
         catcher = client_address
     else:
-        users[client_address] = [(0, 0), False]
-        threading.Thread(target=listen, args=(connection, client_address)).start()
+        users[client_address] = [(0, 0), False, None, None]
+        threading.Thread(target=log_in, args=(connection, client_address)).start()
