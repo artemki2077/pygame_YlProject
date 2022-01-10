@@ -1,5 +1,6 @@
 import pygame
 import main
+import bank_login
 
 
 def draw_text(x, y, text, size=20, color=(255, 255, 255)):
@@ -40,6 +41,8 @@ while is_running:
             elif event.key == pygame.K_RETURN:
                 if index == 0:
                     main.main(name, "lolick", screen)
+                elif index == 1:
+                    bank_login.main(screen)
                 elif index == 2:
                     pygame.quit()
             elif event.key == pygame.K_BACKSPACE:

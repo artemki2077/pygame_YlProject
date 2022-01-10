@@ -193,6 +193,7 @@ class Hero:
         if int(self.position.x) != old_pos_x or int(self.position.y) != old_pos_x:
             sock.sendall(str(self.position)[1:-1].encode("utf-8"))
             old_pos_x = int(self.position.x)
+            
             old_pos_x = int(self.position.y)
 
     def __str__(self):
