@@ -74,9 +74,9 @@ while 1:
     print(f"connect: {client_address}")
     if len(users) == 0:
         # print(1)
-        users[client_address] = [(0, 0), True, None, None]
+        users[client_address] = [(0, 0), True, None, "default"]
         threading.Thread(target=log_in, args=(connection, client_address)).start()
         catcher = client_address
     else:
-        users[client_address] = [(0, 0), False, None, None]
+        users[client_address] = [(0, 0), False, None, "default"]
         threading.Thread(target=log_in, args=(connection, client_address)).start()
