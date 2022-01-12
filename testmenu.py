@@ -28,6 +28,7 @@ def stat_main_menu(_screen=None):
     index = 0
     poss = [(380, 260), (370, 310), (380, 360)]
     name = ""
+    new = True
     while menu_is_running:
         events = pygame.event.get()
         for event in events:
@@ -51,9 +52,11 @@ def stat_main_menu(_screen=None):
                                 conf = json.load(f)
                             if "skin" not in conf:
                                 conf["skins"] = "default"
-                            game.main(name, conf["skin"], screen)
+                            game.main(name, conf["skin"], screen, new)
+                            new = False
                         else:
                             game.main(name, "default", screen)
+                            new = False
                     elif index == 1:
                         bank_login.main(screen)
                     elif index == 2:

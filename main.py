@@ -257,13 +257,13 @@ class Hero:
         return f"pos: {self.position}, vel: {self.velocity}"
 
 
-def main(name, skin, _screen=None):
+def main(name, skin, _screen=None, new=True):
     global sock, my_addr, screen, level1_map, spritesheet, start_x, start_y, surf_skins
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(server)
-    time.sleep(1)
-    sock.sendall(f"{name}, {skin}".encode("utf-8"))
+    if new:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect(server)
+        time.sleep(1)
+        sock.sendall(f"{name}, {skin}".encode("utf-8"))
     threading.Thread(target=listen).start()
     my_addr = sock.getsockname()
     print(f"your addr: {my_addr}")
@@ -356,8 +356,6 @@ def main(name, skin, _screen=None):
 
         pygame.display.flip()
         clock.tick(60)
-
-    pygame.quit()
 
 
 if __name__ == "__main__":
