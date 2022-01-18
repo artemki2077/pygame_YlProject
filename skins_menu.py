@@ -9,8 +9,7 @@ import json
 metadata = MetaData()
 
 engine = create_engine(
-    "postgresql+psycopg2://egerxqhtcwcnti:c2de0ab971d2e36317f9ab03d097191edd79d154f032d86efdce83e6f56232b7@ec2-52-208"
-    "-221-89.eu-west-1.compute.amazonaws.com:5432/dagdtfhhmkkc6u")
+    "postgresql+psycopg2://vwkpsapgezatjo:0707b3f5b76e2dcc9cb997d24e99eaa3332d7b160736f6ae6f56456ec103aa0e@ec2-52-213-119-221.eu-west-1.compute.amazonaws.com:5432/dbfhqn219nh3ea")
 
 # Ниже объекты для управления базой данных и каждый отвечает за свою таблицу
 
@@ -84,7 +83,9 @@ def update_conf(conf, skin):
 def inventory(config):
     conn = engine.connect()
     r = conn.execute(select([Skins.c.skin_Name]).where(Skins.c.user_id == config["id"]))
-    return r.first()
+    inv = list(map(lambda x: x[0], r.all()))
+    print(inv, config["id"])
+    return inv
 
 
 SCREEN_SIZE = WIDTH, HEIGHT = 850, 550
@@ -95,7 +96,7 @@ def start(_screen=None):
     with open("config.json", "r") as f:
         config = json.loads(f.read())
     skin_size = (100, 100)
-    skins = ["default", "lol"]
+    skins = ["default", "lol", "wall", "circle"]
     skin_index = 0
     is_raning = True
     index = 0
@@ -114,7 +115,7 @@ def start(_screen=None):
     invent = [] if invent is None else list(invent)
     invent.append("default")
     error_color = (255, 0, 0)
-    print(invent)
+    # print(invent)
     error = ""
     while is_raning:
         img_skin = surf_skins[skin_index]

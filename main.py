@@ -42,7 +42,7 @@ SCREEN_SIZE = WIDTH, HEIGHT = 850, 550
 start = (87, 145)
 other_plays = {}
 other_plays_classes = {}
-server = ("192.168.36.61", 10001)
+server = ("192.168.1.65", 10001)
 
 
 def draw_text(x, y, text, size=20, color=WHITE_COLOR):
@@ -291,7 +291,7 @@ def main(name, skin, _screen=None, new=True):
     start_y = (screen.get_height() - len(level1_map) * 24) // 2
 
     surf_skins = {}
-    skins = ["default", "lol"]
+    skins = ["default", "lol", 'wall', "circle"]
     for i in skins[1:].copy():
         skins.append("r_" + i)
     for i in skins:
