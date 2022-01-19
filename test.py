@@ -1,11 +1,10 @@
-from sqlalchemy import select, and_, Table, Column, Integer, String, ForeignKey, MetaData, create_engine, DateTime, insert, update
+from sqlalchemy import select, and_, Table, Column, Integer, String, ForeignKey, MetaData, create_engine, DateTime, delete, insert, update
 import datetime
 
 metadata = MetaData()
 
 engine = create_engine(
-    "postgresql+psycopg2://egerxqhtcwcnti:c2de0ab971d2e36317f9ab03d097191edd79d154f032d86efdce83e6f56232b7@ec2-52-208"
-    "-221-89.eu-west-1.compute.amazonaws.com:5432/dagdtfhhmkkc6u")
+    "postgresql+psycopg2://vwkpsapgezatjo:0707b3f5b76e2dcc9cb997d24e99eaa3332d7b160736f6ae6f56456ec103aa0e@ec2-52-213-119-221.eu-west-1.compute.amazonaws.com:5432/dbfhqn219nh3ea")
 
 # Ниже объекты для управления базой данных и каждый отвечает за свою таблицу
 
@@ -52,4 +51,5 @@ Skins = Table("Skins", metadata,
 metadata.create_all(engine)
 
 conn = engine.connect()
-conn.execute(update(Accounts).where(Accounts.c.id == 2).values(balance=101))
+r = conn.execute(select([Skins.c.skin_Name]).where(Skins.c.user_id == 1))
+print(*r.all(), sep="\n")
